@@ -23,6 +23,7 @@ import java.util.Map;
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
+import org.jbpm.bpmn2.core.Collaboration;
 import org.jbpm.bpmn2.core.CorrelationProperty;
 import org.jbpm.bpmn2.core.DataStore;
 import org.jbpm.bpmn2.core.Definitions;
@@ -51,6 +52,7 @@ public class ErrorHandler extends BaseAbstractHandler implements Handler {
             this.validPeers.add(Escalation.class);
             this.validPeers.add(Error.class);
             this.validPeers.add(DataStore.class);
+            this.validPeers.add(Collaboration.class);
             this.validPeers.add(CorrelationProperty.class);
 
 			this.allowNesting = false;

@@ -23,45 +23,31 @@ import java.util.Map;
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
+import org.jbpm.bpmn2.core.Collaboration;
 import org.jbpm.bpmn2.core.Conversation;
 import org.jbpm.bpmn2.core.CorrelationProperty;
-import org.jbpm.bpmn2.core.DataStore;
-import org.jbpm.bpmn2.core.Definitions;
-import org.jbpm.bpmn2.core.Escalation;
-import org.jbpm.bpmn2.core.Interface;
-import org.jbpm.bpmn2.core.ItemDefinition;
-import org.jbpm.bpmn2.core.Message;
-import org.jbpm.compiler.xml.ProcessBuildData;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:lucazamador@gmail.com">Lucas Amador</a>
  */
-public class CorrelationPropertyHandler extends BaseAbstractHandler implements Handler {
+public class ConversationHandler extends BaseAbstractHandler implements Handler {
 	
 	@SuppressWarnings("unchecked")
-	public CorrelationPropertyHandler() {
+	public ConversationHandler() {
 		if ((this.validParents == null) && (this.validPeers == null)) {
 			this.validParents = new HashSet();
-			this.validParents.add(Definitions.class);
+			this.validParents.add(Collaboration.class);
 
 			this.validPeers = new HashSet();
 			this.validPeers.add(null);
-            this.validPeers.add(ItemDefinition.class);
-            this.validPeers.add(Message.class);
-            this.validPeers.add(Interface.class);
-            this.validPeers.add(Escalation.class);
-            this.validPeers.add(Error.class);
-            this.validPeers.add(DataStore.class);
             this.validPeers.add(Conversation.class);
-            this.validPeers.add(CorrelationProperty.class);
 
 			this.allowNesting = false;
 		}
 	}
 
-    @SuppressWarnings("unchecked")
     public Object start(final String uri, final String localName,
 			            final Attributes attrs, final ExtensibleXmlParser parser)
 			throws SAXException {
@@ -69,17 +55,18 @@ public class CorrelationPropertyHandler extends BaseAbstractHandler implements H
 
 		String id = attrs.getValue("id");
 
-        CorrelationProperty correlationProperty = new CorrelationProperty();
-        correlationProperty.setId(id);
-        ProcessBuildData processBuildData = (ProcessBuildData) parser.getData();
-        Map<String, CorrelationProperty> correlationProperties = (Map<String, CorrelationProperty>) processBuildData.getMetaData("CorrelationProperties");
-        if (correlationProperties == null) {
-            correlationProperties = new HashMap<String, CorrelationProperty>();
-            processBuildData.setMetaData("CorrelationProperties", correlationProperties);
-        }
+		Conversation conversation = new Conversation();
+		conversation.setId(id);
 
-        correlationProperties.put(id, correlationProperty);
-		return correlationProperty;
+		Collaboration collaboration = (Collaboration) parser.getParent();
+		Map<String, Conversation> conversations = collaboration.getConversations();
+		if (conversations==null) {
+		    conversations = new HashMap<String, Conversation>();
+		    collaboration.setConversations(conversations);
+		}
+		conversations.put(id, conversation);
+
+		return conversation;
 	}
 
 	public Object end(final String uri, final String localName,

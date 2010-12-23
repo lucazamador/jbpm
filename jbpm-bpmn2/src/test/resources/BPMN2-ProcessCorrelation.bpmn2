@@ -16,13 +16,28 @@
   <itemDefinition id="HelloMessageType" structureRef="java.lang.String"/>
   
   <message id="HelloMessage" itemRef="HelloMessageType" />
-  
+
   <correlationProperty id="propQuoteID" name="Property Quote ID" type="string">
     <correlationPropertyRetrievalExpression messageRef="tns:HelloMessage">
       <messagePath>/request/id</messagePath>
     </correlationPropertyRetrievalExpression>
   </correlationProperty>
-  
+
+  <collaboration id="simpleCollaboration">
+    <conversation id="conversationQuoteRequest">
+      <correlationKey id="correlQuote" name="Quote Correlation Key">
+        <correlationPropertyRef>tns:propQuoteID</correlationPropertyRef>
+      </correlationKey>
+    </conversation>
+    <conversation id="conversationOrderHandling">
+      <correlationKey id="correlOrder" name="Order Correlation Key">
+        <!-- modify parser to support more than one correlationPropertyRef -->
+        <!--correlationPropertyRef>tns:propQuoteID</correlationPropertyRef -->
+        <correlationPropertyRef>tns:propQuoteID</correlationPropertyRef>
+      </correlationKey>
+    </conversation>
+  </collaboration> 
+
   <process processType="Private" isExecutable="true" id="Minimal" name="Minimal Process" tns:packageName="com.sample" >
 
     <!-- process variables -->

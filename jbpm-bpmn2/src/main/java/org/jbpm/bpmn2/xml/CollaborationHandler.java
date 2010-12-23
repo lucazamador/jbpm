@@ -16,9 +16,9 @@
 
 package org.jbpm.bpmn2.xml;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
@@ -31,14 +31,16 @@ import org.jbpm.bpmn2.core.Escalation;
 import org.jbpm.bpmn2.core.Interface;
 import org.jbpm.bpmn2.core.ItemDefinition;
 import org.jbpm.bpmn2.core.Message;
-import org.jbpm.compiler.xml.ProcessBuildData;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public class MessageHandler extends BaseAbstractHandler implements Handler {
+/**
+ * @author <a href="mailto:lucazamador@gmail.com">Lucas Amador</a>
+ */
+public class CollaborationHandler extends BaseAbstractHandler implements Handler {
 	
 	@SuppressWarnings("unchecked")
-	public MessageHandler() {
+	public CollaborationHandler() {
 		if ((this.validParents == null) && (this.validPeers == null)) {
 			this.validParents = new HashSet();
 			this.validParents.add(Definitions.class);
@@ -58,36 +60,25 @@ public class MessageHandler extends BaseAbstractHandler implements Handler {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
     public Object start(final String uri, final String localName,
 			            final Attributes attrs, final ExtensibleXmlParser parser)
 			throws SAXException {
 		parser.startElementBuilder(localName, attrs);
 
 		String id = attrs.getValue("id");
-		String itemRef = attrs.getValue("itemRef");
+
+		Collaboration collaboration = new Collaboration();
+		collaboration.setId(id);
 		
-		Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>)
-            ((ProcessBuildData) parser.getData()).getMetaData("ItemDefinitions");
-        if (itemDefinitions == null) {
-            throw new IllegalArgumentException("No item definitions found");
-        }
-        ItemDefinition itemDefinition = itemDefinitions.get(itemRef);
-        if (itemDefinition == null) {
-            throw new IllegalArgumentException("Could not find itemDefinition " + itemRef);
-        }
-        
-        ProcessBuildData buildData = (ProcessBuildData) parser.getData();
-		Map<String, Message> messages = (Map<String, Message>)
-            ((ProcessBuildData) parser.getData()).getMetaData("Messages");
-        if (messages == null) {
-            messages = new HashMap<String, Message>();
-            buildData.setMetaData("Messages", messages);
-        }
-        Message message = new Message(id); 
-        message.setType(itemDefinition.getStructureRef());
-        messages.put(id, message);
-		return message;
+		Definitions definitions = (Definitions)parser.getParent();
+		List<Collaboration> collaborations = definitions.getCollaborations();
+		if (collaborations==null) {
+		    collaborations = new ArrayList<Collaboration>();
+		    definitions.setCollaborations(collaborations);
+		}
+		collaborations.add(collaboration);
+
+		return collaboration;
 	}
 
 	public Object end(final String uri, final String localName,
@@ -97,7 +88,7 @@ public class MessageHandler extends BaseAbstractHandler implements Handler {
 	}
 
 	public Class<?> generateNodeFor() {
-		return Message.class;
+		return CorrelationProperty.class;
 	}
 
 }

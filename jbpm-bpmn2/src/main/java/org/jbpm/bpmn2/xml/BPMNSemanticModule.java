@@ -75,12 +75,17 @@ public class BPMNSemanticModule extends DefaultSemanticModule {
         addHandler("operation", new OperationHandler());
         addHandler("inMessageRef", new InMessageRefHandler());
         addHandler("escalation", new EscalationHandler());
-        addHandler("correlationProperty", new CorrelationPropertyHandler());
-        addHandler("correlationPropertyRetrievalExpression", new CorrelationPropertyRetrievalExpressionHandler());
-        addHandler("messagePath", new MessagePathHandler());
         addHandler("error", new ErrorHandler());
         addHandler("dataStore", new DataStoreHandler());
         addHandler("association", new AssociationHandler());
+        
+        addHandler("collaboration", new CollaborationHandler());
+        addHandler("conversation", new ConversationHandler());
+        addHandler("correlationKey", new CorrelationKeyHandler());
+        addHandler("correlationProperty", new CorrelationPropertyHandler());
+        addHandler("correlationPropertyRef", new CorrelationPropertyRefHandler());
+        addHandler("correlationPropertyRetrievalExpression", new CorrelationPropertyRetrievalExpressionHandler());
+        addHandler("messagePath", new MessagePathHandler());
         
         handlersByClass.put(Split.class, new SplitHandler());
         handlersByClass.put(Join.class, new JoinHandler());
