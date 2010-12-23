@@ -16,66 +16,46 @@
 
 package org.jbpm.bpmn2.xml;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
 import org.jbpm.bpmn2.core.CorrelationProperty;
-import org.jbpm.bpmn2.core.DataStore;
-import org.jbpm.bpmn2.core.Definitions;
-import org.jbpm.bpmn2.core.Escalation;
-import org.jbpm.bpmn2.core.Interface;
-import org.jbpm.bpmn2.core.ItemDefinition;
-import org.jbpm.bpmn2.core.Message;
-import org.jbpm.compiler.xml.ProcessBuildData;
+import org.jbpm.bpmn2.core.CorrelationProperty.CorrelationPropertyRetrievalExpression;
+import org.jbpm.bpmn2.core.Interface.Operation;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public class ItemDefinitionHandler extends BaseAbstractHandler implements Handler {
+/**
+ * @author <a href="mailto:lucazamador@gmail.com">Lucas Amador</a>
+ */
+public class CorrelationPropertyRetrievalExpressionHandler extends BaseAbstractHandler implements Handler {
 	
 	@SuppressWarnings("unchecked")
-	public ItemDefinitionHandler() {
+	public CorrelationPropertyRetrievalExpressionHandler() {
 		if ((this.validParents == null) && (this.validPeers == null)) {
 			this.validParents = new HashSet();
-			this.validParents.add(Definitions.class);
+			this.validParents.add(CorrelationProperty.class);
 
 			this.validPeers = new HashSet();
 			this.validPeers.add(null);
-            this.validPeers.add(ItemDefinition.class);
-            this.validPeers.add(Message.class);
-            this.validPeers.add(Interface.class);
-            this.validPeers.add(Escalation.class);
-            this.validPeers.add(Error.class);
-            this.validPeers.add(DataStore.class);
-            this.validPeers.add(CorrelationProperty.class);
 
 			this.allowNesting = false;
 		}
 	}
 
-	@SuppressWarnings("unchecked")
     public Object start(final String uri, final String localName,
 			            final Attributes attrs, final ExtensibleXmlParser parser)
 			throws SAXException {
 		parser.startElementBuilder(localName, attrs);
 
-		String id = attrs.getValue("id");
-		String type = attrs.getValue("structureRef");
+		String messageRef = attrs.getValue("messageRef");
 
-		ProcessBuildData buildData = (ProcessBuildData) parser.getData();
-		Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>)
-            buildData.getMetaData("ItemDefinitions");
-        if (itemDefinitions == null) {
-            itemDefinitions = new HashMap<String, ItemDefinition>();
-            buildData.setMetaData("ItemDefinitions", itemDefinitions);
-        }
-        ItemDefinition itemDefinition = new ItemDefinition(id); 
-        itemDefinition.setStructureRef(type);
-        itemDefinitions.put(id, itemDefinition);
-		return itemDefinition;
+		CorrelationProperty cp = (CorrelationProperty) parser.getParent();
+        CorrelationPropertyRetrievalExpression cpre = cp.addCorrelationPropertyRetrievalExpression(messageRef);
+
+		return cpre;
 	}
 
 	public Object end(final String uri, final String localName,
@@ -85,7 +65,7 @@ public class ItemDefinitionHandler extends BaseAbstractHandler implements Handle
 	}
 
 	public Class<?> generateNodeFor() {
-		return ItemDefinition.class;
+		return Operation.class;
 	}
 
 }

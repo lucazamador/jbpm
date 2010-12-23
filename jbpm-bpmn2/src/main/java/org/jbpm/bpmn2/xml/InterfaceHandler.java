@@ -23,6 +23,7 @@ import java.util.List;
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
+import org.jbpm.bpmn2.core.CorrelationProperty;
 import org.jbpm.bpmn2.core.DataStore;
 import org.jbpm.bpmn2.core.Definitions;
 import org.jbpm.bpmn2.core.Escalation;
@@ -49,7 +50,8 @@ public class InterfaceHandler extends BaseAbstractHandler implements Handler {
             this.validPeers.add(Escalation.class);
             this.validPeers.add(Error.class);
             this.validPeers.add(DataStore.class);
-            
+            this.validPeers.add(CorrelationProperty.class);
+
 			this.allowNesting = false;
 		}
 	}

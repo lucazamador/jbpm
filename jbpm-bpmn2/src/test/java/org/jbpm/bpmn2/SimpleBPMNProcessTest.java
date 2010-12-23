@@ -859,7 +859,13 @@ public class SimpleBPMNProcessTest extends JbpmTestCase {
         params.put("x", "MyValue");
         ksession.startProcess("SignalEndEvent", params);
     }
-    
+
+    public void testProcessCorrelation() throws Exception {
+        KnowledgeBase kbase = createKnowledgeBase("BPMN2-ProcessCorrelation.bpmn2");
+        StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);
+        ksession.signalEvent("Message-HelloMessage", "NewValue");
+    }
+
     public void testMessageStart() throws Exception {
         KnowledgeBase kbase = createKnowledgeBase("BPMN2-MessageStart.bpmn2");
 		StatefulKnowledgeSession ksession = createKnowledgeSession(kbase);

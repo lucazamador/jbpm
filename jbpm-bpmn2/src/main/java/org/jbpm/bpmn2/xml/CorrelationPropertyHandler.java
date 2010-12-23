@@ -16,9 +16,9 @@
 
 package org.jbpm.bpmn2.xml;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
@@ -30,14 +30,16 @@ import org.jbpm.bpmn2.core.Escalation;
 import org.jbpm.bpmn2.core.Interface;
 import org.jbpm.bpmn2.core.ItemDefinition;
 import org.jbpm.bpmn2.core.Message;
-import org.jbpm.compiler.xml.ProcessBuildData;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
-public class ItemDefinitionHandler extends BaseAbstractHandler implements Handler {
+/**
+ * @author <a href="mailto:lucazamador@gmail.com">Lucas Amador</a>
+ */
+public class CorrelationPropertyHandler extends BaseAbstractHandler implements Handler {
 	
 	@SuppressWarnings("unchecked")
-	public ItemDefinitionHandler() {
+	public CorrelationPropertyHandler() {
 		if ((this.validParents == null) && (this.validPeers == null)) {
 			this.validParents = new HashSet();
 			this.validParents.add(Definitions.class);
@@ -56,26 +58,23 @@ public class ItemDefinitionHandler extends BaseAbstractHandler implements Handle
 		}
 	}
 
-	@SuppressWarnings("unchecked")
     public Object start(final String uri, final String localName,
 			            final Attributes attrs, final ExtensibleXmlParser parser)
 			throws SAXException {
 		parser.startElementBuilder(localName, attrs);
 
 		String id = attrs.getValue("id");
-		String type = attrs.getValue("structureRef");
 
-		ProcessBuildData buildData = (ProcessBuildData) parser.getData();
-		Map<String, ItemDefinition> itemDefinitions = (Map<String, ItemDefinition>)
-            buildData.getMetaData("ItemDefinitions");
-        if (itemDefinitions == null) {
-            itemDefinitions = new HashMap<String, ItemDefinition>();
-            buildData.setMetaData("ItemDefinitions", itemDefinitions);
+        CorrelationProperty correlationProperty = new CorrelationProperty();
+        correlationProperty.setId(id);
+        Definitions parent = (Definitions) parser.getParent();
+        List<CorrelationProperty> correlationProperties = parent.getCorrelationProperties();
+        if (correlationProperties == null) {
+            correlationProperties = new  ArrayList<CorrelationProperty>();
+            parent.setCorrelationProperties(correlationProperties);
         }
-        ItemDefinition itemDefinition = new ItemDefinition(id); 
-        itemDefinition.setStructureRef(type);
-        itemDefinitions.put(id, itemDefinition);
-		return itemDefinition;
+        correlationProperties.add(correlationProperty);
+		return correlationProperty;
 	}
 
 	public Object end(final String uri, final String localName,
@@ -85,7 +84,7 @@ public class ItemDefinitionHandler extends BaseAbstractHandler implements Handle
 	}
 
 	public Class<?> generateNodeFor() {
-		return ItemDefinition.class;
+		return CorrelationProperty.class;
 	}
 
 }

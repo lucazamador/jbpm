@@ -25,6 +25,7 @@ import org.drools.process.core.datatype.impl.type.ObjectDataType;
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
+import org.jbpm.bpmn2.core.CorrelationProperty;
 import org.jbpm.bpmn2.core.DataStore;
 import org.jbpm.bpmn2.core.Definitions;
 import org.jbpm.bpmn2.core.Escalation;
@@ -53,6 +54,7 @@ public class DataStoreHandler extends BaseAbstractHandler implements Handler {
             this.validPeers.add(Interface.class);
             this.validPeers.add(Escalation.class);
             this.validPeers.add(Error.class);
+            this.validPeers.add(CorrelationProperty.class);
 
 			this.allowNesting = false;
 		}
