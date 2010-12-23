@@ -17,13 +17,16 @@
 package org.jbpm.bpmn2.xml;
 
 import java.util.HashSet;
+import java.util.Map;
 
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
 import org.jbpm.bpmn2.core.CorrelationProperty;
+import org.jbpm.bpmn2.core.Message;
 import org.jbpm.bpmn2.core.CorrelationProperty.CorrelationPropertyRetrievalExpression;
 import org.jbpm.bpmn2.core.Interface.Operation;
+import org.jbpm.compiler.xml.ProcessBuildData;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -51,9 +54,20 @@ public class CorrelationPropertyRetrievalExpressionHandler extends BaseAbstractH
 		parser.startElementBuilder(localName, attrs);
 
 		String messageRef = attrs.getValue("messageRef");
+		String messageId = messageRef.substring(messageRef.indexOf(":") + 1);
 
 		CorrelationProperty cp = (CorrelationProperty) parser.getParent();
-        CorrelationPropertyRetrievalExpression cpre = cp.addCorrelationPropertyRetrievalExpression(messageRef);
+		Map<String, Message> messages = (Map<String, Message>)
+		((ProcessBuildData) parser.getData()).getMetaData("Messages");
+		if (messages == null) {
+		    throw new IllegalArgumentException("No messages found");
+		}
+		Message message = messages.get(messageId);
+		if (message == null) {
+		    throw new IllegalArgumentException("Could not find message " + messageId);
+		}
+		
+        CorrelationPropertyRetrievalExpression cpre = cp.addCorrelationPropertyRetrievalExpression(message);
 
 		return cpre;
 	}

@@ -22,13 +22,13 @@ public class CorrelationProperty implements Serializable {
         this.id = id;
     }
     
-    public CorrelationPropertyRetrievalExpression addCorrelationPropertyRetrievalExpression(String messageRef) {
+    public CorrelationPropertyRetrievalExpression addCorrelationPropertyRetrievalExpression(Message messageRef) {
         CorrelationPropertyRetrievalExpression cpre = new CorrelationPropertyRetrievalExpression();
         cpre.setMessageRef(messageRef);
         if (retrievalExpressions==null) {
             retrievalExpressions = new HashMap<String, CorrelationProperty.CorrelationPropertyRetrievalExpression>();
         }
-        retrievalExpressions.put(messageRef, cpre);
+        retrievalExpressions.put(messageRef.getId(), cpre);
         return cpre;
     }
 
@@ -44,13 +44,13 @@ public class CorrelationProperty implements Serializable {
 
         private static final long serialVersionUID = 4L;
 
-        private String messageRef;
+        private Message messageRef;
         private String messagePath;
 
-        public void setMessageRef(String messageRef) {
+        public void setMessageRef(Message messageRef) {
             this.messageRef = messageRef;
         }
-        public String getMessageRef() {
+        public Message getMessageRef() {
             return messageRef;
         }
 
