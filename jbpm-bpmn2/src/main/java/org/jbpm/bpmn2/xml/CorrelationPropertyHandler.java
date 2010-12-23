@@ -16,9 +16,8 @@
 
 package org.jbpm.bpmn2.xml;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
@@ -30,6 +29,7 @@ import org.jbpm.bpmn2.core.Escalation;
 import org.jbpm.bpmn2.core.Interface;
 import org.jbpm.bpmn2.core.ItemDefinition;
 import org.jbpm.bpmn2.core.Message;
+import org.jbpm.compiler.xml.ProcessBuildData;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -58,6 +58,7 @@ public class CorrelationPropertyHandler extends BaseAbstractHandler implements H
 		}
 	}
 
+    @SuppressWarnings("unchecked")
     public Object start(final String uri, final String localName,
 			            final Attributes attrs, final ExtensibleXmlParser parser)
 			throws SAXException {
@@ -67,13 +68,14 @@ public class CorrelationPropertyHandler extends BaseAbstractHandler implements H
 
         CorrelationProperty correlationProperty = new CorrelationProperty();
         correlationProperty.setId(id);
-        Definitions parent = (Definitions) parser.getParent();
-        List<CorrelationProperty> correlationProperties = parent.getCorrelationProperties();
+        ProcessBuildData processBuildData = (ProcessBuildData) parser.getData();
+        Map<String, CorrelationProperty> correlationProperties = (Map<String, CorrelationProperty>) processBuildData.getMetaData("CorrelationProperties");
         if (correlationProperties == null) {
-            correlationProperties = new  ArrayList<CorrelationProperty>();
-            parent.setCorrelationProperties(correlationProperties);
+            correlationProperties = new HashMap<String, CorrelationProperty>();
+            processBuildData.setMetaData("CorrelationProperties", correlationProperties);
         }
-        correlationProperties.add(correlationProperty);
+
+        correlationProperties.put(id, correlationProperty);
 		return correlationProperty;
 	}
 
