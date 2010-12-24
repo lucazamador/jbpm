@@ -42,6 +42,7 @@ public class CorrelationPropertyRefHandler extends BaseAbstractHandler implement
 
 			this.validPeers = new HashSet();
 			this.validPeers.add(null);
+			this.validPeers.add(CorrelationProperty.class);
 
 			this.allowNesting = false;
 		}
@@ -74,7 +75,7 @@ public class CorrelationPropertyRefHandler extends BaseAbstractHandler implement
 		}
 		CorrelationKey correlationKey = (CorrelationKey)parser.getParent();
 		correlationKey.addCorrelationProperty(correlationProperty);
-		return parser.getCurrent();
+		return correlationProperty;
 	}
 
 	public Class<?> generateNodeFor() {
