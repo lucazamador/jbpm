@@ -16,9 +16,9 @@
 
 package org.jbpm.bpmn2.xml;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
@@ -31,6 +31,7 @@ import org.jbpm.bpmn2.core.Escalation;
 import org.jbpm.bpmn2.core.Interface;
 import org.jbpm.bpmn2.core.ItemDefinition;
 import org.jbpm.bpmn2.core.Message;
+import org.jbpm.compiler.xml.ProcessBuildData;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -60,6 +61,7 @@ public class CollaborationHandler extends BaseAbstractHandler implements Handler
 		}
 	}
 
+    @SuppressWarnings("unchecked")
     public Object start(final String uri, final String localName,
 			            final Attributes attrs, final ExtensibleXmlParser parser)
 			throws SAXException {
@@ -70,13 +72,13 @@ public class CollaborationHandler extends BaseAbstractHandler implements Handler
 		Collaboration collaboration = new Collaboration();
 		collaboration.setId(id);
 		
-		Definitions definitions = (Definitions)parser.getParent();
-		List<Collaboration> collaborations = definitions.getCollaborations();
+		ProcessBuildData processBuildData = (ProcessBuildData)parser.getData();
+		Map<String, Collaboration> collaborations = (Map<String, Collaboration>) processBuildData.getMetaData("Collaborations");
 		if (collaborations==null) {
-		    collaborations = new ArrayList<Collaboration>();
-		    definitions.setCollaborations(collaborations);
+		    collaborations = new HashMap<String, Collaboration>();
+		    processBuildData.setMetaData("Collaborations", collaborations);
 		}
-		collaborations.add(collaboration);
+		collaborations.put(id, collaboration);
 
 		return collaboration;
 	}

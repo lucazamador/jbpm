@@ -26,7 +26,6 @@ public class Definitions implements Serializable {
 	private String targetNamespace;
 	private List<DataStore> dataStores;
 	private List<Association> associations;
-	private List<Collaboration> collaborations;
 
 	public String getTargetNamespace() {
 		return targetNamespace;
@@ -52,11 +51,4 @@ public class Definitions implements Serializable {
 		return this.associations;
 	}
 
-    public void setCollaborations(List<Collaboration> collaborations) {
-        this.collaborations = collaborations;
-    }
-
-    public List<Collaboration> getCollaborations() {
-        return collaborations;
-    }
 }
