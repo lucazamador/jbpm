@@ -14,6 +14,7 @@ public class Collaboration implements Serializable {
     private String id;
     private Map<String, Conversation> conversations = new HashMap<String, Conversation>();
     private Map<String, Participant> participants = new HashMap<String, Participant>();
+    private Map<String, MessageFlow> messageFlows = new HashMap<String, MessageFlow>();
 
     public String getId() {
         return id;
@@ -37,6 +38,14 @@ public class Collaboration implements Serializable {
 
     public Map<String, Participant> getParticipants() {
         return participants;
+    }
+
+    public void setMessageFlows(Map<String, MessageFlow> messageFlows) {
+        this.messageFlows = messageFlows;
+    }
+
+    public Map<String, MessageFlow> getMessageFlows() {
+        return messageFlows;
     }
 
 }

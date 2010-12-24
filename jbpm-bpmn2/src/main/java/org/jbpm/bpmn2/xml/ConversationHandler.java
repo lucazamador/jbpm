@@ -25,6 +25,7 @@ import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
 import org.jbpm.bpmn2.core.Collaboration;
 import org.jbpm.bpmn2.core.Conversation;
+import org.jbpm.bpmn2.core.MessageFlow;
 import org.jbpm.bpmn2.core.Participant;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -43,6 +44,7 @@ public class ConversationHandler extends BaseAbstractHandler implements Handler 
 			this.validPeers = new HashSet();
 			this.validPeers.add(null);
 			this.validPeers.add(Participant.class);
+			this.validPeers.add(MessageFlow.class);
             this.validPeers.add(Conversation.class);
 
 			this.allowNesting = false;

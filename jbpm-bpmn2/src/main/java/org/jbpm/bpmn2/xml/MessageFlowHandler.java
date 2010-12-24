@@ -23,15 +23,10 @@ import java.util.Map;
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
+import org.jbpm.bpmn2.core.Collaboration;
 import org.jbpm.bpmn2.core.Conversation;
-import org.jbpm.bpmn2.core.CorrelationProperty;
-import org.jbpm.bpmn2.core.DataStore;
-import org.jbpm.bpmn2.core.Definitions;
-import org.jbpm.bpmn2.core.Escalation;
-import org.jbpm.bpmn2.core.Interface;
-import org.jbpm.bpmn2.core.ItemDefinition;
-import org.jbpm.bpmn2.core.Message;
-import org.jbpm.compiler.xml.ProcessBuildData;
+import org.jbpm.bpmn2.core.MessageFlow;
+import org.jbpm.bpmn2.core.Participant;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -44,18 +39,13 @@ public class MessageFlowHandler extends BaseAbstractHandler implements Handler {
 	public MessageFlowHandler() {
 		if ((this.validParents == null) && (this.validPeers == null)) {
 			this.validParents = new HashSet();
-			this.validParents.add(Definitions.class);
+			this.validParents.add(Collaboration.class);
 
 			this.validPeers = new HashSet();
 			this.validPeers.add(null);
-            this.validPeers.add(ItemDefinition.class);
-            this.validPeers.add(Message.class);
-            this.validPeers.add(Interface.class);
-            this.validPeers.add(Escalation.class);
-            this.validPeers.add(Error.class);
-            this.validPeers.add(DataStore.class);
+            this.validPeers.add(MessageFlow.class);
+            this.validPeers.add(Participant.class);
             this.validPeers.add(Conversation.class);
-            this.validPeers.add(CorrelationProperty.class);
 
 			this.allowNesting = false;
 		}
@@ -68,18 +58,26 @@ public class MessageFlowHandler extends BaseAbstractHandler implements Handler {
 		parser.startElementBuilder(localName, attrs);
 
 		String id = attrs.getValue("id");
+		String messageRef = attrs.getValue("messageRef");
+		String sourceRef = attrs.getValue("sourceRef");
+		String targetRef = attrs.getValue("targetRef");
 
-        CorrelationProperty correlationProperty = new CorrelationProperty();
-        correlationProperty.setId(id);
-        ProcessBuildData processBuildData = (ProcessBuildData) parser.getData();
-        Map<String, CorrelationProperty> correlationProperties = (Map<String, CorrelationProperty>) processBuildData.getMetaData("CorrelationProperties");
-        if (correlationProperties == null) {
-            correlationProperties = new HashMap<String, CorrelationProperty>();
-            processBuildData.setMetaData("CorrelationProperties", correlationProperties);
-        }
+		Collaboration collaboration = (Collaboration)parser.getParent();
+		Map<String, MessageFlow> messageFlows = collaboration.getMessageFlows();
+		if (messageFlows==null) {
+		    messageFlows = new HashMap<String, MessageFlow>();
+		    collaboration.setMessageFlows(messageFlows);
+		}
 
-        correlationProperties.put(id, correlationProperty);
-		return correlationProperty;
+	    MessageFlow messageFlow = new MessageFlow();
+	    messageFlow.setId(id);
+	    messageFlow.setMessageRef(messageRef);
+	    messageFlow.setSourceRef(sourceRef);
+	    messageFlow.setTargetRef(targetRef);
+
+		messageFlows.put(id, messageFlow);
+
+		return messageFlow;
 	}
 
 	public Object end(final String uri, final String localName,
@@ -89,7 +87,7 @@ public class MessageFlowHandler extends BaseAbstractHandler implements Handler {
 	}
 
 	public Class<?> generateNodeFor() {
-		return CorrelationProperty.class;
+		return MessageFlow.class;
 	}
 
 }

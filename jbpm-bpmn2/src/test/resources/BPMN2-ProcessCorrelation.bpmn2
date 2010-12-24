@@ -33,6 +33,10 @@
       <interfaceRef>tns:shipperServiceInterface</interfaceRef>
     </participant>
 
+    <messageFlow id="mf1" messageRef="tns:msgRFQ" sourceRef="tns:buyer" targetRef="tns:receiveQuoteRequest"/>
+    <messageFlow id="mf2" messageRef="tns:msgQuote" sourceRef="tns:sendQuote" targetRef="tns:buyer"/>
+    <messageFlow id="mf3" messageRef="tns:msgFault" sourceRef="tns:sendFault" targetRef="tns:buyer"/>
+
     <conversation id="conversationQuoteRequest">
       <correlationKey id="correlQuote" name="Quote Correlation Key">
         <correlationPropertyRef>tns:propQuoteID</correlationPropertyRef>
