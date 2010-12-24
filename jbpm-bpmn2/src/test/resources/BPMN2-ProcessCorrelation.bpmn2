@@ -44,18 +44,22 @@
     <messageFlow id="mf3" messageRef="tns:msgFault" sourceRef="tns:sendFault" targetRef="tns:buyer"/>
 
     <conversation id="conversationQuoteRequest">
+      <messageFlowRef>tns:mf1</messageFlowRef>
+      <messageFlowRef>tns:mf3</messageFlowRef>
       <correlationKey id="correlQuote" name="Quote Correlation Key">
         <correlationPropertyRef>tns:propQuoteID</correlationPropertyRef>
       </correlationKey>
     </conversation>
     <conversation id="conversationOrderHandling">
+      <messageFlowRef>tns:mf2</messageFlowRef>
+      <messageFlowRef>tns:mf3</messageFlowRef>
       <correlationKey id="correlOrder" name="Order Correlation Key">
         <correlationPropertyRef>tns:propQuoteID</correlationPropertyRef>
         <correlationPropertyRef>tns:propStockID</correlationPropertyRef>
       </correlationKey>
     </conversation>
 
-  </collaboration> 
+  </collaboration>
 
   <process processType="Private" isExecutable="true" id="Minimal" name="Minimal Process" tns:packageName="com.sample" >
 

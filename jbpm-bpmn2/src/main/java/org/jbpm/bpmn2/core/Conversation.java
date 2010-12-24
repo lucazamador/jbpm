@@ -13,6 +13,7 @@ public class Conversation implements Serializable {
 
     private String id;
     private Map<String, CorrelationKey> correlationKeys = new HashMap<String, Conversation.CorrelationKey>();
+    private Map<String, MessageFlow> messageFlows = new HashMap<String, MessageFlow>();
 
     public String getId() {
         return id;
@@ -36,6 +37,14 @@ public class Conversation implements Serializable {
 
     public Map<String, CorrelationKey> getCorrelationKeys() {
         return correlationKeys;
+    }
+
+    public void setMessageFlows(Map<String, MessageFlow> messageFlows) {
+        this.messageFlows = messageFlows;
+    }
+
+    public Map<String, MessageFlow> getMessageFlows() {
+        return messageFlows;
     }
 
     public class CorrelationKey implements Serializable {

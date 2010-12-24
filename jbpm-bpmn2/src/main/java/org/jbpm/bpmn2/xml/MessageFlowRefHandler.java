@@ -24,24 +24,25 @@ import org.drools.xml.Handler;
 import org.jbpm.bpmn2.core.Conversation;
 import org.jbpm.bpmn2.core.Conversation.CorrelationKey;
 import org.jbpm.bpmn2.core.MessageFlow;
+import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:lucazamador@gmail.com">Lucas Amador</a>
  */
-public class CorrelationKeyHandler extends BaseAbstractHandler implements Handler {
+public class MessageFlowRefHandler extends BaseAbstractHandler implements Handler {
 	
 	@SuppressWarnings("unchecked")
-	public CorrelationKeyHandler() {
+	public MessageFlowRefHandler() {
 		if ((this.validParents == null) && (this.validPeers == null)) {
 			this.validParents = new HashSet();
 			this.validParents.add(Conversation.class);
 
 			this.validPeers = new HashSet();
 			this.validPeers.add(null);
-			this.validPeers.add(CorrelationKey.class);
 			this.validPeers.add(MessageFlow.class);
+			this.validPeers.add(CorrelationKey.class);
 
 			this.allowNesting = false;
 		}
@@ -50,25 +51,22 @@ public class CorrelationKeyHandler extends BaseAbstractHandler implements Handle
     public Object start(final String uri, final String localName,
 			            final Attributes attrs, final ExtensibleXmlParser parser)
 			throws SAXException {
-		parser.startElementBuilder(localName, attrs);
 
-		String id = attrs.getValue("id");
-		String name = attrs.getValue("name");
+        parser.startElementBuilder(localName, attrs);
 
-		Conversation conversation = (Conversation) parser.getParent();
-        CorrelationKey ck = conversation.addCorrelationKey(id, name);
-
-		return ck;
+        return parser.getCurrent();
 	}
 
 	public Object end(final String uri, final String localName,
 			          final ExtensibleXmlParser parser) throws SAXException {
-		parser.endElementBuilder();
-		return parser.getCurrent();
+	    Element element = parser.endElementBuilder();
+	    String messageFlowRef = element.getTextContent();
+	    System.out.println("messageFlowRef: " + messageFlowRef);
+	    return new MessageFlow();
 	}
 
 	public Class<?> generateNodeFor() {
-		return CorrelationKey.class;
+	    return MessageFlow.class;
 	}
 
 }

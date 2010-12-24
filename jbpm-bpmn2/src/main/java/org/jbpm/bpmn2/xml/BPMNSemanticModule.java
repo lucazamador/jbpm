@@ -84,6 +84,7 @@ public class BPMNSemanticModule extends DefaultSemanticModule {
         addHandler("interfaceRef", new InterfaceRefHandler());
         addHandler("messageFlow", new MessageFlowHandler());
         addHandler("conversation", new ConversationHandler());
+        addHandler("messageFlowRef", new MessageFlowRefHandler());
         addHandler("correlationKey", new CorrelationKeyHandler());
         addHandler("correlationProperty", new CorrelationPropertyHandler());
         addHandler("correlationPropertyRef", new CorrelationPropertyRefHandler());
