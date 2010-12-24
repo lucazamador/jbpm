@@ -9,10 +9,11 @@ import java.util.Map;
  */
 public class Collaboration implements Serializable {
 
-    private static final long serialVersionUID = 4L;
+    private static final long serialVersionUID = 1L;
 
     private String id;
     private Map<String, Conversation> conversations = new HashMap<String, Conversation>();
+    private Map<String, Participant> participants = new HashMap<String, Participant>();
 
     public String getId() {
         return id;
@@ -28,6 +29,14 @@ public class Collaboration implements Serializable {
 
     public Map<String, Conversation> getConversations() {
         return conversations;
+    }
+
+    public void setParticipants(Map<String, Participant> participants) {
+        this.participants = participants;
+    }
+
+    public Map<String, Participant> getParticipants() {
+        return participants;
     }
 
 }

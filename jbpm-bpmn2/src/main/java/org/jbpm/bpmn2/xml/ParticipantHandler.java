@@ -16,32 +16,34 @@
 
 package org.jbpm.bpmn2.xml;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
-import org.jbpm.bpmn2.core.CorrelationProperty;
-import org.jbpm.bpmn2.core.CorrelationProperty.CorrelationPropertyRetrievalExpression;
-import org.jbpm.bpmn2.core.Message;
-import org.jbpm.compiler.xml.ProcessBuildData;
+import org.jbpm.bpmn2.core.Collaboration;
+import org.jbpm.bpmn2.core.Conversation;
+import org.jbpm.bpmn2.core.Participant;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
  * @author <a href="mailto:lucazamador@gmail.com">Lucas Amador</a>
  */
-public class CorrelationPropertyRetrievalExpressionHandler extends BaseAbstractHandler implements Handler {
+public class ParticipantHandler extends BaseAbstractHandler implements Handler {
 	
 	@SuppressWarnings("unchecked")
-	public CorrelationPropertyRetrievalExpressionHandler() {
+	public ParticipantHandler() {
 		if ((this.validParents == null) && (this.validPeers == null)) {
 			this.validParents = new HashSet();
-			this.validParents.add(CorrelationProperty.class);
+			this.validParents.add(Collaboration.class);
 
 			this.validPeers = new HashSet();
 			this.validPeers.add(null);
+			this.validPeers.add(Conversation.class);
+			this.validPeers.add(Participant.class);
 
 			this.allowNesting = false;
 		}
@@ -52,23 +54,24 @@ public class CorrelationPropertyRetrievalExpressionHandler extends BaseAbstractH
 			throws SAXException {
 		parser.startElementBuilder(localName, attrs);
 
-		String messageRef = attrs.getValue("messageRef");
-		String messageId = messageRef.substring(messageRef.indexOf(":") + 1);
+		String id = attrs.getValue("id");
+		String name = attrs.getValue("name");
+		String processRef = attrs.getValue("processRef");
 
-		CorrelationProperty cp = (CorrelationProperty) parser.getParent();
-		Map<String, Message> messages = (Map<String, Message>)
-		((ProcessBuildData) parser.getData()).getMetaData("Messages");
-		if (messages == null) {
-		    throw new IllegalArgumentException("No messages found");
-		}
-		Message message = messages.get(messageId);
-		if (message == null) {
-		    throw new IllegalArgumentException("Could not find message " + messageId);
-		}
-		
-        CorrelationPropertyRetrievalExpression cpre = cp.addCorrelationPropertyRetrievalExpression(message);
+		Participant participant = new Participant();
+        participant.setId(id);
+        participant.setName(name);
+        participant.setProcessRef(processRef);
 
-		return cpre;
+		Collaboration collaboration = (Collaboration)parser.getParent();
+		Map<String, Participant> participants = collaboration.getParticipants();
+		if (participants==null) {
+		    participants = new HashMap<String, Participant>();
+		    collaboration.setParticipants(participants);
+		}
+		participants.put(id, participant);
+
+		return participant;
 	}
 
 	public Object end(final String uri, final String localName,
@@ -78,7 +81,7 @@ public class CorrelationPropertyRetrievalExpressionHandler extends BaseAbstractH
 	}
 
 	public Class<?> generateNodeFor() {
-		return CorrelationPropertyRetrievalExpression.class;
+		return Participant.class;
 	}
 
 }

@@ -24,6 +24,15 @@
   </correlationProperty>
 
   <collaboration id="simpleCollaboration">
+
+    <participant id="seller" name="Seller" processRef="tns:sellerProcess">
+      <interfaceRef>tns:sellerServiceInterface</interfaceRef>
+    </participant>
+    <participant id="buyer" name="Buyer"/>
+    <participant id="shipper" name="Shipper">
+      <interfaceRef>tns:shipperServiceInterface</interfaceRef>
+    </participant>
+
     <conversation id="conversationQuoteRequest">
       <correlationKey id="correlQuote" name="Quote Correlation Key">
         <correlationPropertyRef>tns:propQuoteID</correlationPropertyRef>
@@ -36,6 +45,7 @@
         <correlationPropertyRef>tns:propQuoteID</correlationPropertyRef>
       </correlationKey>
     </conversation>
+
   </collaboration> 
 
   <process processType="Private" isExecutable="true" id="Minimal" name="Minimal Process" tns:packageName="com.sample" >

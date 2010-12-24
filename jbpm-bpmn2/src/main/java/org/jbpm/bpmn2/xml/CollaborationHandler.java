@@ -88,7 +88,7 @@ public class CollaborationHandler extends BaseAbstractHandler implements Handler
 	}
 
 	public Class<?> generateNodeFor() {
-		return CorrelationProperty.class;
+		return Collaboration.class;
 	}
 
 }

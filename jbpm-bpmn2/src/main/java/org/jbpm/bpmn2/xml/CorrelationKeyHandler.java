@@ -23,7 +23,6 @@ import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
 import org.jbpm.bpmn2.core.Conversation;
 import org.jbpm.bpmn2.core.Conversation.CorrelationKey;
-import org.jbpm.bpmn2.core.Interface.Operation;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -66,7 +65,7 @@ public class CorrelationKeyHandler extends BaseAbstractHandler implements Handle
 	}
 
 	public Class<?> generateNodeFor() {
-		return Operation.class;
+		return CorrelationKey.class;
 	}
 
 }
