@@ -16,14 +16,18 @@
 
 package org.jbpm.bpmn2.xml;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
+import org.jbpm.bpmn2.core.Collaboration;
 import org.jbpm.bpmn2.core.Conversation;
 import org.jbpm.bpmn2.core.Conversation.CorrelationKey;
 import org.jbpm.bpmn2.core.MessageFlow;
+import org.jbpm.compiler.xml.ProcessBuildData;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -57,12 +61,31 @@ public class MessageFlowRefHandler extends BaseAbstractHandler implements Handle
         return parser.getCurrent();
 	}
 
-	public Object end(final String uri, final String localName,
+	@SuppressWarnings("unchecked")
+    public Object end(final String uri, final String localName,
 			          final ExtensibleXmlParser parser) throws SAXException {
 	    Element element = parser.endElementBuilder();
 	    String messageFlowRef = element.getTextContent();
-	    System.out.println("messageFlowRef: " + messageFlowRef);
-	    return new MessageFlow();
+	    String messageFlowId = messageFlowRef.substring(messageFlowRef.indexOf(":") + 1);
+	    Conversation conversation = (Conversation) parser.getParent();
+	    ProcessBuildData processBuildData = (ProcessBuildData) parser.getData();
+	    Map<String, Collaboration> collaborations = (Map<String, Collaboration>) processBuildData.getMetaData("Collaborations");
+	    for (String collaborationId : collaborations.keySet()) {
+            Collaboration collaboration = collaborations.get(collaborationId);
+            if (collaboration.getConversations().containsValue(conversation)) {
+                if (collaboration.getMessageFlows().containsKey(messageFlowId)) {
+                    MessageFlow messageFlow = collaboration.getMessageFlows().get(messageFlowId);
+                    Map<String, MessageFlow> messageFlows = conversation.getMessageFlows();
+                    if (messageFlows==null) {
+                        messageFlows = new HashMap<String, MessageFlow>();
+                        conversation.setMessageFlows(messageFlows);
+                    }
+                    messageFlows.put(messageFlowId, messageFlow);
+                    return messageFlow;
+                }
+            }
+        }
+	    throw new IllegalArgumentException("unable to find messageFlow with id: " + messageFlowRef);
 	}
 
 	public Class<?> generateNodeFor() {

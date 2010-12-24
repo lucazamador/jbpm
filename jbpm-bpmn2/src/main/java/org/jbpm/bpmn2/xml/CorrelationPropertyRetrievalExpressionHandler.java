@@ -56,8 +56,7 @@ public class CorrelationPropertyRetrievalExpressionHandler extends BaseAbstractH
 		String messageId = messageRef.substring(messageRef.indexOf(":") + 1);
 
 		CorrelationProperty cp = (CorrelationProperty) parser.getParent();
-		Map<String, Message> messages = (Map<String, Message>)
-		((ProcessBuildData) parser.getData()).getMetaData("Messages");
+		Map<String, Message> messages = (Map<String, Message>) ((ProcessBuildData) parser.getData()).getMetaData("Messages");
 		if (messages == null) {
 		    throw new IllegalArgumentException("No messages found");
 		}
