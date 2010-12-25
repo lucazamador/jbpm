@@ -68,9 +68,13 @@ public class CorrelationPropertyHandler extends BaseAbstractHandler implements H
 		parser.startElementBuilder(localName, attrs);
 
 		String id = attrs.getValue("id");
+		String name = attrs.getValue("name");
+		String type = attrs.getValue("type");
 
         CorrelationProperty correlationProperty = new CorrelationProperty();
         correlationProperty.setId(id);
+        correlationProperty.setName(name);
+        correlationProperty.setType(type);
         ProcessBuildData processBuildData = (ProcessBuildData) parser.getData();
         Map<String, CorrelationProperty> correlationProperties = (Map<String, CorrelationProperty>) processBuildData.getMetaData("CorrelationProperties");
         if (correlationProperties == null) {
