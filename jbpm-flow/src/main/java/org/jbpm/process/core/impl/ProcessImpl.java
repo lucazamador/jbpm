@@ -44,6 +44,7 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
     private String version;
     private String type;
     private String packageName;
+    private String collaborationName;
     private Resource resource;
     private ContextContainer contextContainer = new ContextContainerImpl();
     private Map<String, Object> metaData = new HashMap<String, Object>();
@@ -92,7 +93,15 @@ public class ProcessImpl implements Process, Serializable, ContextResolver {
 		this.packageName = packageName;
 	}
 
-	public List<Context> getContexts(String contextType) {
+	public void setCollaborationName(String collaborationName) {
+        this.collaborationName = collaborationName;
+    }
+
+    public String getCollaborationName() {
+        return collaborationName;
+    }
+
+    public List<Context> getContexts(String contextType) {
 	    return this.contextContainer.getContexts(contextType);
 	}
     

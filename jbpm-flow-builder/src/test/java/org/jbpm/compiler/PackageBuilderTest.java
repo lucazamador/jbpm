@@ -244,6 +244,11 @@ public class PackageBuilderTest extends JbpmTestCase {
 
         }
 
+        public String getCollaborationName() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
     }
 
 }

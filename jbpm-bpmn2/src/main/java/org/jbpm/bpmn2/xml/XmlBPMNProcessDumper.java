@@ -153,6 +153,9 @@ public class XmlBPMNProcessDumper {
         if (packageName != null && !"org.drools.bpmn2".equals(packageName)) {
             xmlDump.append("tns:packageName=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(packageName) + "\" ");
         }
+        if (process.getCollaborationName() != null) {
+            xmlDump.append("definitionalCollaborationRef=\"" + XmlBPMNProcessDumper.replaceIllegalCharsAttribute(process.getCollaborationName()) + "\" ");
+        }
         if (((org.jbpm.workflow.core.WorkflowProcess) process).isDynamic()) {
         	xmlDump.append("tns:adHoc=\"true\" ");
         }

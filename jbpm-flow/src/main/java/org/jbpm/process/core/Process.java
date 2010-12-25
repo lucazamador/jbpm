@@ -55,6 +55,8 @@ public interface Process extends org.drools.definition.process.Process, ContextC
      */
     void setPackageName(String packageName);
     
+    void setCollaborationName(String collaborationName);
+    
     void setMetaData(String name, Object value);
 
     /**
