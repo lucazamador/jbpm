@@ -126,6 +126,9 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 			          final ExtensibleXmlParser parser) throws SAXException {
 		parser.endElementBuilder();
 		RuleFlowProcess process = (RuleFlowProcess) parser.getCurrent();
+		ProcessBuildData processBuildData = (ProcessBuildData) parser.getData();
+		process.setMetaData("CorrelationProperties", processBuildData.getMetaData("CorrelationProperties"));
+		process.setMetaData("Collaborations", processBuildData.getMetaData("Collaborations"));
 		List<SequenceFlow> connections = (List<SequenceFlow>)
 			process.getMetaData(CONNECTIONS);
 		linkConnections(process, connections);
