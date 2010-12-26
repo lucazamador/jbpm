@@ -32,6 +32,8 @@ import org.drools.rule.builder.dialect.java.JavaDialect;
 import org.drools.xml.Handler;
 import org.drools.xml.SemanticModule;
 import org.jbpm.bpmn2.core.Association;
+import org.jbpm.bpmn2.core.CorrelationProperty;
+import org.jbpm.bpmn2.core.CorrelationProperty.CorrelationPropertyRetrievalExpression;
 import org.jbpm.bpmn2.core.DataStore;
 import org.jbpm.bpmn2.core.Definitions;
 import org.jbpm.bpmn2.xpath.XPathDialect;
@@ -101,7 +103,7 @@ public class XmlBPMNProcessDumper {
 		this.metaDataType = metaDataType;
 	}
 
-	protected void visitProcess(WorkflowProcess process, StringBuilder xmlDump, int metaDataType) {
+    protected void visitProcess(WorkflowProcess process, StringBuilder xmlDump, int metaDataType) {
         String targetNamespace = (String) process.getMetaData().get("TargetNamespace");
         if (targetNamespace == null) {
         	targetNamespace = "http://www.jboss.org/drools";
@@ -140,6 +142,13 @@ public class XmlBPMNProcessDumper {
     			visitDataStore(dataStore, xmlDump);
     		}
     	}
+    	
+    	// correlation properties
+    	@SuppressWarnings("unchecked")
+    	Map<String, CorrelationProperty> correlationProperties = (Map<String, CorrelationProperty>) process.getMetaData().get("CorrelationProperties");
+    	for (String key : correlationProperties.keySet()) {
+            visitCorrelationProperty(correlationProperties.get(key), xmlDump);
+        }
     	
 	    // the process itself
 		xmlDump.append("  <process processType=\"Private\" isExecutable=\"true\" ");
@@ -183,7 +192,7 @@ public class XmlBPMNProcessDumper {
         }
         xmlDump.append("</definitions>");
     }
-    
+
     private void visitDataStore(DataStore dataStore, StringBuilder xmlDump) {
     	String itemSubjectRef = dataStore.getItemSubjectRef();
     	String itemDefId = itemSubjectRef.substring(itemSubjectRef.indexOf(':') + 1);
@@ -198,7 +207,18 @@ public class XmlBPMNProcessDumper {
     	xmlDump.append(" itemSubjectRef=\"" + XmlDumper.replaceIllegalChars(dataStore.getItemSubjectRef()) + "\"");
     	xmlDump.append("/>" + EOL);
 	}
-    
+
+    private void visitCorrelationProperty(CorrelationProperty correlationProperty, StringBuilder xmlDump) {
+        xmlDump.append("  <correlationProperty id=\"" + correlationProperty.getId() + "\" name=\"" + correlationProperty.getName() + "\"");
+        xmlDump.append(" type=\"" + correlationProperty.getType() + "\">" + EOL);
+        for (CorrelationPropertyRetrievalExpression cpre : correlationProperty.getRetrievalExpressions().values()) {
+            xmlDump.append("    <correlationPropertyRetrievalExpression messageRef=\"tns:" + cpre.getMessageRef().getId() + "\">" + EOL);
+            xmlDump.append("      <messagePath>" + cpre.getMessagePath() + "</messagePath>" + EOL);
+            xmlDump.append("    </correlationPropertyRetrievalExpression>" + EOL);
+        }
+        xmlDump.append("  </correlationProperty>" + EOL + EOL);
+    }
+
     private void visitAssociation(Association association, StringBuilder xmlDump) {
     	xmlDump.append("    <association id=\"" + association.getId() + "\" ");
     	xmlDump.append(" sourceRef=\"" + association.getSourceRef() + "\" ");
