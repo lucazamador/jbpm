@@ -32,10 +32,15 @@ import org.drools.rule.builder.dialect.java.JavaDialect;
 import org.drools.xml.Handler;
 import org.drools.xml.SemanticModule;
 import org.jbpm.bpmn2.core.Association;
+import org.jbpm.bpmn2.core.Collaboration;
+import org.jbpm.bpmn2.core.Conversation;
+import org.jbpm.bpmn2.core.Conversation.CorrelationKey;
 import org.jbpm.bpmn2.core.CorrelationProperty;
 import org.jbpm.bpmn2.core.CorrelationProperty.CorrelationPropertyRetrievalExpression;
 import org.jbpm.bpmn2.core.DataStore;
 import org.jbpm.bpmn2.core.Definitions;
+import org.jbpm.bpmn2.core.MessageFlow;
+import org.jbpm.bpmn2.core.Participant;
 import org.jbpm.bpmn2.xpath.XPathDialect;
 import org.jbpm.process.core.ContextContainer;
 import org.jbpm.process.core.context.swimlane.Swimlane;
@@ -149,7 +154,14 @@ public class XmlBPMNProcessDumper {
     	for (String key : correlationProperties.keySet()) {
             visitCorrelationProperty(correlationProperties.get(key), xmlDump);
         }
-    	
+
+        // collaborations
+        @SuppressWarnings("unchecked")
+        Map<String, Collaboration> collaborations = (Map<String, Collaboration>) process.getMetaData().get("Collaborations");
+        for (String key : collaborations.keySet()) {
+            visitCollaboration(collaborations.get(key), xmlDump);
+        }
+
 	    // the process itself
 		xmlDump.append("  <process processType=\"Private\" isExecutable=\"true\" ");
         if (process.getId() != null) {
@@ -217,6 +229,59 @@ public class XmlBPMNProcessDumper {
             xmlDump.append("    </correlationPropertyRetrievalExpression>" + EOL);
         }
         xmlDump.append("  </correlationProperty>" + EOL + EOL);
+    }
+
+    private void visitCollaboration(Collaboration collaboration, StringBuilder xmlDump) {
+        String collaborationId = collaboration.getId();
+        xmlDump.append("  <collaboration id=\"" + collaborationId + "\">" + EOL);
+        visitParticipant(collaboration.getParticipants(), xmlDump);
+        visitMessageFlow(collaboration.getMessageFlows(), xmlDump);
+        visitConversation(collaboration.getConversations(), xmlDump);
+        xmlDump.append("  </collaboration>" + EOL + EOL);
+    }
+    
+    private void visitParticipant(Map<String, Participant> participants, StringBuilder xmlDump) {
+        for (Participant participant : participants.values()) {
+            xmlDump.append("    <participant id=\"" + participant.getId() + "\" name=\"" + participant.getName() + "\"");
+            if (participant.getProcessRef() != null) {
+                xmlDump.append(" processRef=\"" + participant.getProcessRef() + "\"");
+            }
+            if (participant.getInterfaceRef() != null) {
+                xmlDump.append(">" + EOL);
+                xmlDump.append("      <interfaceRef>" + participant.getInterfaceRef() + "</interfaceRef>" + EOL);
+                xmlDump.append("    </participant>" + EOL);
+            }
+            else {
+                xmlDump.append(" />" + EOL);
+            }
+        }
+    }
+    
+    private void visitMessageFlow(Map<String, MessageFlow> messageFlows, StringBuilder xmlDump) {
+        for (MessageFlow messageFlow : messageFlows.values()) {
+            xmlDump.append("    <messageFlow id=\"" + messageFlow.getId() + "\"");
+            xmlDump.append(" messageRef=\"" + messageFlow.getMessageRef() + "\"");
+            xmlDump.append(" sourceRef=\"" + messageFlow.getSourceRef() + "\"");
+            xmlDump.append(" targetRef=\"" + messageFlow.getTargetRef() + "\" />" + EOL);
+        }
+        
+    }
+    
+    private void visitConversation(Map<String, Conversation> conversations, StringBuilder xmlDump) {
+        for (Conversation conversation : conversations.values()) {
+            xmlDump.append("    <conversation id=\"" + conversation.getId() + "\">" + EOL);
+            for (String messageFlowId : conversation.getMessageFlows().keySet()) {
+                xmlDump.append("      <messageFlowRef>tns:" + messageFlowId + "</messageFlowRef>" + EOL);
+            }
+            for (CorrelationKey correlationKey : conversation.getCorrelationKeys().values()) {
+                xmlDump.append("      <correlationKey id=\"" + correlationKey.getId() + "\" name=\"" + correlationKey.getName() +  "\">" + EOL);
+                for (String correlationPropertyId : correlationKey.getCorrelationProperties().keySet()) {
+                    xmlDump.append("        <correlationPropertyRef>tns:" + correlationPropertyId + "</correlationPropertyRef>" + EOL);
+                }
+                xmlDump.append("      </correlationKey>" + EOL);
+            }
+            xmlDump.append("    </conversation>" + EOL);
+        }
     }
 
     private void visitAssociation(Association association, StringBuilder xmlDump) {
