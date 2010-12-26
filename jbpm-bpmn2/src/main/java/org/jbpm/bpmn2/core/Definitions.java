@@ -26,6 +26,8 @@ public class Definitions implements Serializable {
 	private String targetNamespace;
 	private List<DataStore> dataStores;
 	private List<Association> associations;
+	private List<CorrelationProperty> correlationProperties;
+	private List<Collaboration> collaborations;
 
 	public String getTargetNamespace() {
 		return targetNamespace;
@@ -50,5 +52,21 @@ public class Definitions implements Serializable {
 	public List<Association> getAssociations() {
 		return this.associations;
 	}
+
+    public void setCorrelationProperties(List<CorrelationProperty> correlationProperties) {
+        this.correlationProperties = correlationProperties;
+    }
+
+    public List<CorrelationProperty> getCorrelationProperties() {
+        return correlationProperties;
+    }
+
+    public void setCollaborations(List<Collaboration> collaborations) {
+        this.collaborations = collaborations;
+    }
+
+    public List<Collaboration> getCollaborations() {
+        return collaborations;
+    }
 
 }

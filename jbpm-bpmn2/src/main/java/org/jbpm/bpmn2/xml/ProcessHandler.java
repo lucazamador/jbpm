@@ -28,7 +28,6 @@ import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
 import org.jbpm.bpmn2.core.Collaboration;
-import org.jbpm.bpmn2.core.Conversation;
 import org.jbpm.bpmn2.core.CorrelationProperty;
 import org.jbpm.bpmn2.core.DataStore;
 import org.jbpm.bpmn2.core.Definitions;
@@ -126,9 +125,6 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 			          final ExtensibleXmlParser parser) throws SAXException {
 		parser.endElementBuilder();
 		RuleFlowProcess process = (RuleFlowProcess) parser.getCurrent();
-		ProcessBuildData processBuildData = (ProcessBuildData) parser.getData();
-		process.setMetaData("CorrelationProperties", processBuildData.getMetaData("CorrelationProperties"));
-		process.setMetaData("Collaborations", processBuildData.getMetaData("Collaborations"));
 		List<SequenceFlow> connections = (List<SequenceFlow>)
 			process.getMetaData(CONNECTIONS);
 		linkConnections(process, connections);

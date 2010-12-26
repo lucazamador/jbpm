@@ -17,14 +17,14 @@
 package org.jbpm.bpmn2.xml;
 
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 
 import org.drools.xml.BaseAbstractHandler;
 import org.drools.xml.ExtensibleXmlParser;
 import org.drools.xml.Handler;
 import org.jbpm.bpmn2.core.Conversation.CorrelationKey;
 import org.jbpm.bpmn2.core.CorrelationProperty;
-import org.jbpm.compiler.xml.ProcessBuildData;
+import org.jbpm.bpmn2.core.Definitions;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -55,7 +55,6 @@ public class CorrelationPropertyRefHandler extends BaseAbstractHandler implement
         return null;
 	}
 
-	@SuppressWarnings("unchecked")
     public Object end(final String uri, final String localName,
 			          final ExtensibleXmlParser parser) throws SAXException {
 
@@ -64,18 +63,16 @@ public class CorrelationPropertyRefHandler extends BaseAbstractHandler implement
 		String correlationPropertyRef = element.getTextContent();
 		String correlationPropertyId = correlationPropertyRef.substring(correlationPropertyRef.indexOf(":") + 1);
 
-		ProcessBuildData processBuildData = (ProcessBuildData)parser.getData();
-		Map<String, CorrelationProperty> correlationProperties = (Map<String, CorrelationProperty>) processBuildData.getMetaData("CorrelationProperties");
-		if (correlationProperties == null) {
-		    throw new IllegalArgumentException("No correlation properties found");
-		}
-		CorrelationProperty correlationProperty = correlationProperties.get(correlationPropertyId);
-		if (correlationProperty == null) {
-		    throw new IllegalArgumentException("Could not find correlation property " + correlationPropertyId);
-		}
-		CorrelationKey correlationKey = (CorrelationKey)parser.getParent();
-		correlationKey.addCorrelationProperty(correlationProperty);
-		return correlationProperty;
+		Definitions definitions = (Definitions) parser.getParent(Definitions.class);
+		List<CorrelationProperty> correlationProperties = definitions.getCorrelationProperties();
+		for (CorrelationProperty correlationProperty : correlationProperties) {
+            if (correlationProperty.getId().equals(correlationPropertyId)) {
+                CorrelationKey correlationKey = (CorrelationKey)parser.getParent();
+                correlationKey.addCorrelationProperty(correlationProperty);
+                return correlationProperty;
+            }
+        }
+		throw new IllegalArgumentException("unable to find correlation key with id " + correlationPropertyId);
 	}
 
 	public Class<?> generateNodeFor() {

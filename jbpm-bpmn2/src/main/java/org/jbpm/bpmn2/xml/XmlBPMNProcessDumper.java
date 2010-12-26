@@ -147,19 +147,17 @@ public class XmlBPMNProcessDumper {
     			visitDataStore(dataStore, xmlDump);
     		}
     	}
-    	
+
     	// correlation properties
-    	@SuppressWarnings("unchecked")
-    	Map<String, CorrelationProperty> correlationProperties = (Map<String, CorrelationProperty>) process.getMetaData().get("CorrelationProperties");
-    	for (String key : correlationProperties.keySet()) {
-            visitCorrelationProperty(correlationProperties.get(key), xmlDump);
+    	List<CorrelationProperty> correlationProperties = def.getCorrelationProperties();
+    	for (CorrelationProperty correlationProperty : correlationProperties) {
+    	    visitCorrelationProperty(correlationProperty, xmlDump);
         }
 
         // collaborations
-        @SuppressWarnings("unchecked")
-        Map<String, Collaboration> collaborations = (Map<String, Collaboration>) process.getMetaData().get("Collaborations");
-        for (String key : collaborations.keySet()) {
-            visitCollaboration(collaborations.get(key), xmlDump);
+        List<Collaboration> collaborations = def.getCollaborations();
+        for (Collaboration collaboration : collaborations) {
+            visitCollaboration(collaboration, xmlDump);
         }
 
 	    // the process itself
@@ -264,7 +262,6 @@ public class XmlBPMNProcessDumper {
             xmlDump.append(" sourceRef=\"" + messageFlow.getSourceRef() + "\"");
             xmlDump.append(" targetRef=\"" + messageFlow.getTargetRef() + "\" />" + EOL);
         }
-        
     }
     
     private void visitConversation(Map<String, Conversation> conversations, StringBuilder xmlDump) {
