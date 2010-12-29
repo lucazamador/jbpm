@@ -149,16 +149,18 @@ public class XmlBPMNProcessDumper {
     	}
 
     	// correlation properties
-    	List<CorrelationProperty> correlationProperties = def.getCorrelationProperties();
-    	for (CorrelationProperty correlationProperty : correlationProperties) {
-    	    visitCorrelationProperty(correlationProperty, xmlDump);
-        }
+    	if (def != null && def.getCorrelationProperties() != null) {
+    	    for (CorrelationProperty correlationProperty : def.getCorrelationProperties()) {
+    	        visitCorrelationProperty(correlationProperty, xmlDump);
+    	    }
+    	}
 
         // collaborations
-        List<Collaboration> collaborations = def.getCollaborations();
-        for (Collaboration collaboration : collaborations) {
-            visitCollaboration(collaboration, xmlDump);
-        }
+    	if (def != null && def.getCollaborations() != null) {
+    	    for (Collaboration collaboration : def.getCollaborations()) {
+    	        visitCollaboration(collaboration, xmlDump);
+    	    }
+    	}
 
 	    // the process itself
 		xmlDump.append("  <process processType=\"Private\" isExecutable=\"true\" ");
