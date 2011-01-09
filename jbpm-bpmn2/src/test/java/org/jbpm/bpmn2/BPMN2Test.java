@@ -27,6 +27,7 @@ import org.drools.impl.EnvironmentFactory;
 import org.drools.io.ResourceFactory;
 import org.drools.runtime.KnowledgeSessionConfiguration;
 import org.drools.runtime.StatefulKnowledgeSession;
+import org.drools.runtime.process.ProcessInstance;
 import org.jbpm.JbpmTestCase;
 
 public class BPMN2Test extends JbpmTestCase {
@@ -42,5 +43,20 @@ public class BPMN2Test extends JbpmTestCase {
 		StatefulKnowledgeSession ksession = kbase.newStatefulKnowledgeSession(config, EnvironmentFactory.newEnvironment());
 		ksession.startProcess("Minimal");
 	}
+
+    public void testMultipleProcessInOneFile() {
+        KnowledgeBuilder kbuilder = KnowledgeBuilderFactory.newKnowledgeBuilder();
+        kbuilder.add(ResourceFactory.newClassPathResource("BPMN2-MultipleProcessInOneFile.xml"), ResourceType.BPMN2);
+        KnowledgeBase kbase = kbuilder.newKnowledgeBase();
+        Properties properties = new Properties();
+        properties.put("drools.processInstanceManagerFactory", "org.jbpm.process.instance.impl.DefaultProcessInstanceManagerFactory");
+        properties.put("drools.processSignalManagerFactory", "org.jbpm.process.instance.event.DefaultSignalManagerFactory");
+        KnowledgeSessionConfiguration config = KnowledgeBaseFactory.newKnowledgeSessionConfiguration(properties);
+        StatefulKnowledgeSession ksession = kbase.newStatefulKnowledgeSession(config, EnvironmentFactory.newEnvironment());
+        ProcessInstance processInstance = ksession.startProcess("Evaluation");
+        assertNotNull(processInstance);
+        ProcessInstance processInstance2 = ksession.startProcess("Simple");
+        assertNotNull(processInstance2);
+    }
 
 }

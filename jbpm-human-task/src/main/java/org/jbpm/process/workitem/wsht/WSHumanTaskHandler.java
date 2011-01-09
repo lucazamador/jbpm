@@ -117,6 +117,7 @@ public class WSHumanTaskHandler implements WorkItemHandler {
 		
 		TaskData taskData = new TaskData();
 		taskData.setWorkItemId(workItem.getId());
+		taskData.setProcessInstanceId(workItem.getProcessInstanceId());
 		taskData.setSkipable(!"false".equals(workItem.getParameter("Skippable")));
         //Sub Task Data
         Long parentId = (Long) workItem.getParameter("ParentId");
@@ -139,28 +140,23 @@ public class WSHumanTaskHandler implements WorkItemHandler {
 		List<OrganizationalEntity> potentialOwners = new ArrayList<OrganizationalEntity>();
 
         String actorId = (String) workItem.getParameter("ActorId");
-		if (actorId != null) {
-			
+		if (actorId != null && actorId.trim().length() > 0) {
 			String[] actorIds = actorId.split(",");
 			for (String id: actorIds) {
-				User user = new User();
-				user.setId(id.trim());
-				potentialOwners.add(user);
+				potentialOwners.add(new User(id.trim()));
 			}
             //Set the first user as creator ID??? hmmm might be wrong
             if (potentialOwners.size() > 0){
                 taskData.setCreatedBy((User)potentialOwners.get(0));
             }
         }
+		
         String groupId = (String) workItem.getParameter("GroupId");
-		if (groupId != null) {
-			
+		if (groupId != null && groupId.trim().length() > 0) {
 			String[] groupIds = groupId.split(",");
 			for (String id: groupIds) {
-
-				potentialOwners.add(new Group(id));
+				potentialOwners.add(new Group(id.trim()));
 			}
-			
 		}
 
         assignments.setPotentialOwners(potentialOwners);

@@ -80,6 +80,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
             this.validPeers.add(Collaboration.class);
             this.validPeers.add(CorrelationProperty.class);
             this.validPeers.add(DataStore.class);
+            this.validPeers.add(RuleFlowProcess.class);
 
 			this.allowNesting = false;
 		}
@@ -114,7 +115,7 @@ public class ProcessHandler extends BaseAbstractHandler implements Handler {
 			process.setAutoComplete(false);
 		}
 
-		((ProcessBuildData) parser.getData()).setProcess(process);
+		((ProcessBuildData) parser.getData()).addProcess(process);
 		// register the definitions object as metadata of process.
 		process.setMetaData("Definitions", parser.getParent());
 		return process;
